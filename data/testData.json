@@ -6,6 +6,22 @@
       "lastName": "Perez",
       "email": "juan@mail.com",
       "password": "Password123!"
+    },
+    {
+      "type": "usuarioUnico",
+      "firstName": "Maria",
+      "lastName": "Gomez",
+      "email": "mariagomez",
+      "emailSuffix": "@mail.com",
+      "password": "SecurePass123!"
+    },
+    {
+      "type": "usuarioExistente",
+      "firstName": "Juan",
+      "lastName": "Perez",
+      "email": "juan",
+      "emailSuffix": "@mail.com",
+      "password": "Password123!"
     }
-]
+  ]
 }

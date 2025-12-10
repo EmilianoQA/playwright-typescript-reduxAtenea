@@ -2,10 +2,11 @@ import { test, expect } from '@playwright/test';
 import { RegisterPage } from '../Pages/registerPage';
 import testData from '../data/testData.json';
 
-const uniqueEmail = `mariagomez${Date.now()}@mail.com`;
-const existingEmail = `juan${Date.now().toString()}@mail.com`; 
-let registerPage: RegisterPage;
 const validUser = testData.users[0];
+const uniqueEmailUser = testData.users[1];
+const existingEmailUser = testData.users[2];
+let registerPage: RegisterPage;
+
 
 test.beforeEach(async ({ page }) => {
   registerPage = new RegisterPage(page);
@@ -39,16 +40,38 @@ test('TC-4 Verificar redireccionamiento a login despues del registro', async ({ 
   await expect(page).toHaveURL('http://localhost:3000/login');
 });
 
-test('TC-5 Verificar registro de usuario exitoso con datos validos ', async ({ page }) => {
-  await registerPage.completeFormAndSubmit('Maria', 'Gomez', uniqueEmail, 'SecurePass123!');
+test('TC-5 Verificar registro de usuario exitoso con datos validos', async ({ page }) => {
+  const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
+  await registerPage.completeFormAndSubmit(
+    uniqueEmailUser.firstName,
+    uniqueEmailUser.lastName,
+    dynamicEmail,
+    uniqueEmailUser.password
+  );
   await registerPage.verifySuccessMessage();
 });
 
+
 test('TC-6 Verificar mensaje de error al registrar con email ya existente', async ({ page }) => {
-  await registerPage.completeFormAndSubmit('Juan', 'Perez', existingEmail, 'Password123!');
+  const dynamicEmail = `${existingEmailUser.email}${Date.now()}${existingEmailUser.emailSuffix}`;
+  
+  // Primer intento
+  await registerPage.completeFormAndSubmit(
+    existingEmailUser.firstName,
+    existingEmailUser.lastName,
+    dynamicEmail,
+    existingEmailUser.password
+  );
   await registerPage.verifySuccessMessage();
+  
+  // Segundo intento con el mismo email y usuario
   await registerPage.navigateToRegister();
-  await registerPage.completeFormAndSubmit('Carlos', 'Lopez', existingEmail, 'AnotherPass123!');
+  await registerPage.completeFormAndSubmit(
+    existingEmailUser.firstName,
+    existingEmailUser.lastName,
+    dynamicEmail,
+    existingEmailUser.password
+  );
   await expect(page.getByText('Email already in use')).toBeVisible();
   await expect(page.getByText('Registro exitoso!')).not.toBeVisible();
 });
