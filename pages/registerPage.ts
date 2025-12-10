@@ -21,7 +21,6 @@ export class RegisterPage {// page es la pagina de playwright y Page es el tipo 
     this.registerSuccessMessage = page.getByText('Registro exitoso!');
   }
 
-
 async navigateToRegister() {
     await this.page.goto('http://localhost:3000/');
     // Esperar a que la red esté inactiva para asegurar que la página se haya cargado completamente
