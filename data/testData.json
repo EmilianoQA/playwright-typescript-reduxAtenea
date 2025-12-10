@@ -1,0 +1,11 @@
+{
+  "users": [
+    {
+      "type": "usuarioValido",
+      "firstName": "Juan",
+      "lastName": "Perez",
+      "email": "juan@mail.com",
+      "password": "Password123!"
+    }
+]
+}
