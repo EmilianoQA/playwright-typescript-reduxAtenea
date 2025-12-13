@@ -15,7 +15,7 @@ export class BackendUtils {
   }
 
   static async registerUserViaApi(request: APIRequestContext, userData: any, dynamicEmail: string) {
-    const response = await request.post('**/api/auth/signup', {
+    const response = await request.post('http://localhost:6007/api/auth/signup', {
       data: {
         firstName: userData.firstName,
         lastName: userData.lastName,

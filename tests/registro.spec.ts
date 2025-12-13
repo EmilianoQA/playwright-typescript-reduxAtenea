@@ -3,11 +3,13 @@ import { RegisterPage } from '../Pages/registerPage';
 import testData from '../data/testData.json';
 import { LoginPage } from '../pages/loginPage';
 import { BackendUtils } from '../utils/backendUtils';
+import { DataFactory } from '../utils/dataFactory';
 
 
 const validUser = testData.users[0];
 const uniqueEmailUser = testData.users[1];
 const existingEmailUser = testData.users[2];
+const newValidUser = DataFactory.createNewUser();
 let registerPage: RegisterPage;
 
 test.beforeEach(async ({ page }) => {
@@ -39,33 +41,61 @@ test('TC-4 Verificar redireccionamiento a login despues del registro', async ({ 
 });
 
 test('TC-5 Verificar registro de usuario exitoso con datos validos', async ({ page }) => {
-  const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
+  //const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
   await registerPage.completeFormAndSubmit(
-    uniqueEmailUser.firstName,
-    uniqueEmailUser.lastName,
-    dynamicEmail,
-    uniqueEmailUser.password
+    newValidUser.firstName,
+    newValidUser.lastName,
+    newValidUser.email,
+    newValidUser.password
   );
+  console.log('Registered with email:', newValidUser.email);
   await registerPage.verifySuccessMessage();
 });
+/* lo comentamos porque puede ser una mala practica que el mismo test ester verifcando dos cosas distintas, puede traer problemas de mantenimiento
 
-test('TC-6 Verificar mensaje de error al registrar con email ya existente', async ({ page }) => {
-  const dynamicEmail = `${existingEmailUser.email}${Date.now()}${existingEmailUser.emailSuffix}`;
+test('TC-6 viejo - Verificar mensaje de error al registrar con email ya existente', async ({ page }) => {
+ //const dynamicEmail = `${existingEmailUser.email}${Date.now()}${existingEmailUser.emailSuffix}`;
+ const existingEmail = DataFactory.createNewUser();
   await registerPage.completeFormAndSubmit(
-    existingEmailUser.firstName,
-    existingEmailUser.lastName,
-    dynamicEmail,
-    existingEmailUser.password
+    existingEmail.firstName,
+    existingEmail.lastName,
+    existingEmail.email,
+    existingEmail.password
   );
+  console.log('Attempted registration with existing email:', existingEmail.email);
   await registerPage.verifySuccessMessage();
   
   await registerPage.navigateToRegister();
   await registerPage.completeFormAndSubmit(
-    existingEmailUser.firstName,
-    existingEmailUser.lastName,
-    dynamicEmail,
-    existingEmailUser.password
+    existingEmail.firstName,
+    existingEmail.lastName,
+    existingEmail.email,
+    existingEmail.password
   );
+  console.log('Attempted registration with existing email again:', existingEmail.email);
+  await expect(page.getByText('Email already in use')).toBeVisible();
+  await expect(page.getByText('Registro exitoso!')).not.toBeVisible();
+});
+*/
+
+test('TC-6 Verificar mensaje de error al registrar con email ya existente', async ({ page, request }) => {
+ // creando el usuario existente mediante la API antes de intentar registrarlo via UI
+  const existingUser = DataFactory.createNewUser();
+  const response = await BackendUtils.registerUserViaApi(request, existingUser, existingUser.email);
+  const responseBody = await response.json();
+  console.log('API Response Body:', responseBody);
+  
+  expect(response.status()).toBe(201);
+  expect(response.status()).toBe(201); 
+ // Intentamos registrar el mismo usuario via UI
+  await registerPage.navigateToRegister();
+  await registerPage.completeFormAndSubmit(
+    existingUser.firstName,
+    existingUser.lastName,
+    existingUser.email,
+    existingUser.password
+  );
+  // Verificamos el mensaje de error esperado
   await expect(page.getByText('Email already in use')).toBeVisible();
   await expect(page.getByText('Registro exitoso!')).not.toBeVisible();
 });
@@ -82,9 +112,8 @@ test('TC-9 Verificar registro de usuario exitoso con datos validos a través de 
   const responsePromise = page.waitForResponse ('**/api/auth/signup');
   await registerPage.clickRegisterButton();
   const response = await responsePromise;
-  const responseBody = await response.json();
-  await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
-  console.log(responseBody)
+  const responseBody = await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
+  console.log('Body response:', responseBody);
   await registerPage.verifySuccessMessage();
 });
 
@@ -103,12 +132,11 @@ test('TC-10 Realizar registro de usario desde la API y verificar login con esos 
 test('TC-11 Verificar manejo de error al registrar usuario cuando la API responde con error 500', async ({ page }) => {
   await BackendUtils.mockSignupAsServerError(page);
 
-  const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
   await registerPage.completeFormAndSubmit(
-    uniqueEmailUser.firstName,
-    uniqueEmailUser.lastName,
-    dynamicEmail,
-    uniqueEmailUser.password
+    newValidUser.firstName,
+    newValidUser.lastName,
+    newValidUser.email,
+    newValidUser.password
   );
 
   await expect(page.getByText('Internal Server Error')).toBeVisible();
