@@ -2,6 +2,7 @@ import { test, expect, request } from '@playwright/test';
 import { RegisterPage } from '../Pages/registerPage';
 import testData from '../data/testData.json';
 import { LoginPage } from '../pages/loginPage';
+import { BackendUtils } from '../utils/backendUtils';
 
 
 const validUser = testData.users[0];
@@ -78,45 +79,20 @@ test('TC-9 Verificar registro de usuario exitoso con datos validos a través de 
     uniqueEmailUser.password
   );
 
-  const responsePromise = page.waitForResponse ('http://localhost:6007/api/auth/signup');
+  const responsePromise = page.waitForResponse ('**/api/auth/signup');
   await registerPage.clickRegisterButton();
   const response = await responsePromise;
-  const responseBody = await response.json()
-  expect (response.status()).toBe(201);
-  expect (responseBody).toHaveProperty('token');
-  expect (typeof responseBody.token).toBe('string');
-  expect (responseBody).toHaveProperty('user');
-  expect (responseBody.user).toEqual(expect.objectContaining({
-    firstName: uniqueEmailUser.firstName,
-    lastName: uniqueEmailUser.lastName,
-    email: dynamicEmail
-  }));
+  const responseBody = await response.json();
+  await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
   console.log(responseBody)
   await registerPage.verifySuccessMessage();
 });
 
 test('TC-10 Realizar registro de usario desde la API y verificar login con esos datos', async ({ page,request }) => {
   const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
-  const response = await request.post('http://localhost:6007/api/auth/signup', {
-    data: {
-      firstName: uniqueEmailUser.firstName,
-      lastName: uniqueEmailUser.lastName,
-      email: dynamicEmail,
-      password: uniqueEmailUser.password
-    }
-  });
-  const responseBody = await response.json()
-  expect (response.status()).toBe(201);
-  expect (responseBody).toHaveProperty('token');
-  expect (typeof responseBody.token).toBe('string');
-  expect (responseBody).toHaveProperty('user');
-  expect (responseBody.user).toEqual(expect.objectContaining({
-    firstName: uniqueEmailUser.firstName,
-    lastName: uniqueEmailUser.lastName,
-    email: dynamicEmail
-  }));  
-  console.log(responseBody)
- // Ahora verificamos el login con esos datos y usarmos LoginPage
+  const response = await BackendUtils.registerUserViaApi(request, uniqueEmailUser, dynamicEmail);
+  await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
+  // Ahora intentamos iniciar sesión con las credenciales del usuario registrado
   const loginPage = new LoginPage(page);
   await loginPage.navigateToLogin();
   await loginPage.completeFormAndSubmit(dynamicEmail, uniqueEmailUser.password);
@@ -125,13 +101,7 @@ test('TC-10 Realizar registro de usario desde la API y verificar login con esos 
 
 // Mokear la respuesta de la API para probar el manejo de errores usando route 
 test('TC-11 Verificar manejo de error al registrar usuario cuando la API responde con error 500', async ({ page }) => {
-  await registerPage.page.route('**/api/auth/signup', route => {
-    route.fulfill({
-      status: 500,
-      contentType: 'application/json',
-      body: JSON.stringify({ message: 'Internal Server Error' }),
-    });
-  });
+  await BackendUtils.mockSignupAsServerError(page);
 
   const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
   await registerPage.completeFormAndSubmit(
@@ -143,4 +113,5 @@ test('TC-11 Verificar manejo de error al registrar usuario cuando la API respond
 
   await expect(page.getByText('Internal Server Error')).toBeVisible();
   await expect(registerPage.registerSuccessMessage).not.toBeVisible();
-}); 
+});
+// request para hacer llamadas a la API sin interfaz grafica

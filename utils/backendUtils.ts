@@ -2,7 +2,7 @@ import { expect, Page, APIRequestContext, APIResponse } from '@playwright/test';
 
 export class BackendUtils {
 
-  static async validateSignupResponse(response: APIResponse, userData: any, dynamicEmail: string) {
+  static async validateSignupResponse(response: any, userData: any, dynamicEmail: string) {
     expect(response.status()).toBe(201);
     const responseBody = await response.json();
     expect(responseBody).toHaveProperty('token');
@@ -11,10 +11,11 @@ export class BackendUtils {
       lastName: userData.lastName,
       email: dynamicEmail
     }));
+    return responseBody;
   }
 
   static async registerUserViaApi(request: APIRequestContext, userData: any, dynamicEmail: string) {
-    const response = await request.post('http://localhost:6007/api/auth/signup', {
+    const response = await request.post('**/api/auth/signup', {
       data: {
         firstName: userData.firstName,
         lastName: userData.lastName,
