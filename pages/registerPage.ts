@@ -26,12 +26,20 @@ async navigateToRegister() {
     // Esperar a que la red esté inactiva para asegurar que la página se haya cargado completamente
     await this.page.waitForLoadState('networkidle');
 }
+async verifyRegisterElements() {
+    await expect(this.firstNameInput).toBeVisible();
+    await expect(this.lastNameInput).toBeVisible();
+    await expect(this.emailInput).toBeVisible();
+    await expect(this.passwordInput).toBeVisible();
+    await expect(this.registerButton).toBeVisible();
+    await expect(this.loginButton).toBeVisible();
+}
 
 async verifySuccessMessage() {
     await expect(this.registerSuccessMessage).toBeVisible();
 }
 
-async completarFormularioYRegistrar(firstName: string, lastName: string, email: string, password: string) {
+async completarFormularioRegistrar(firstName: string, lastName: string, email: string, password: string) {
     await this.firstNameInput.fill(firstName);
     await this.lastNameInput.fill(lastName);
     await this.emailInput.fill(email);
@@ -42,7 +50,7 @@ async clickRegisterButton() {
 }
 
 async completeFormAndSubmit(firstName: string, lastName: string, email: string, password: string) {
-    await this.completarFormularioYRegistrar(firstName, lastName, email, password);
+    await this.completarFormularioRegistrar(firstName, lastName, email, password);
     await this.clickRegisterButton();
 }
 }

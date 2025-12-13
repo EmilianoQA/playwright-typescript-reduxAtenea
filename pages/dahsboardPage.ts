@@ -5,7 +5,7 @@ export class DashboardPage {
   readonly dashboardTitle: Locator;
   readonly logoutButton: Locator;
   
-
+  
   constructor(page: Page) {
     this.page = page;
     this.dashboardTitle = page.getByTestId('titulo-dashboard');
