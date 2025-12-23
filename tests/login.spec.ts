@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Response } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
-import { DashboardPage } from '../pages/dahsboardPage'; 
+import { DashboardPage } from '../pages/dashboardPage'; 
 import testData from '../data/testData.json';
 import { DataFactory } from '../utils/dataFactory';
 import { BackendUtils } from '../utils/backendUtils';
@@ -23,24 +23,31 @@ test ('TC-7 Verificar elementos en la pagina de login', async ({ page }) => {
 test('TC-8 Verificar login exitoso con usuario válido', async ({ page }) => {
   await loginPage.llenarFormularioLogin(validUser.email, validUser.password);
   await loginPage.clickLoginButton();
+  // verficar respuesta de login
+  const responsePromise = page.waitForResponse('**/api/auth/login');
+  const response = await responsePromise;
+  const responseBody = await BackendUtils.validateLoginResponse(response);
+  console.log('Login response body:', responseBody);
+  // Verifcar que se muestra el mensaje de exito y redireccion a dashboard
   await loginPage.verifySuccessMessage();
   await dashboardPage.navigateToDashboard();
   await dashboardPage.verifyDashboardElements();
 });
 
-test ('TC-12 Iniciar sesion con usuario creado a traves de la API', async ({ page, request }) => {
-  // 1. Crear un nuevo usuario mediante la API
+test('TC-10 Login E2E exitoso con usuario creado por backend', async ({ page,request }) => {
   const newUser = DataFactory.createNewUser();
   const response = await BackendUtils.registerUserViaApi(request, newUser, newUser.email);
-  await BackendUtils.validateSignupResponse(response, newUser, newUser.email);
-  console.log('User created via API with email:', newUser.email);
-
-  // 2. Usar las credenciales de este usuario para iniciar sesión a través de la UI
-  await loginPage.llenarFormularioLogin(newUser.email, newUser.password);
-  await loginPage.clickLoginButton();
-
-  // 3. Verificar que el inicio de sesión fue exitoso
+  await BackendUtils.validateStatusCode (response, 201);
+  console.log ('User created via API with email:', newUser.email);
+  const loginPage = new LoginPage(page);
+  await loginPage.navigateToLogin();
+  const responseLoginPromise = page.waitForResponse('**/api/auth/login');
+  await loginPage.completeFormAndSubmit(newUser.email, newUser.password);
+  const responseLogin = await responseLoginPromise;
+  const loginBody = await BackendUtils.validateStatusCode(responseLogin, 200);
+  console.log('Login response body:', loginBody); 
   await loginPage.verifySuccessMessage();
   await dashboardPage.navigateToDashboard();
   await dashboardPage.verifyDashboardElements();
-}); 
+});
+

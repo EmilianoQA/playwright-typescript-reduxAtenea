@@ -41,7 +41,6 @@ test('TC-4 Verificar redireccionamiento a login despues del registro', async ({ 
 });
 
 test('TC-5 Verificar registro de usuario exitoso con datos validos', async ({ page }) => {
-  //const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
   await registerPage.completeFormAndSubmit(
     newValidUser.firstName,
     newValidUser.lastName,
@@ -86,7 +85,6 @@ test('TC-6 Verificar mensaje de error al registrar con email ya existente', asyn
   console.log('API Response Body:', responseBody);
   
   expect(response.status()).toBe(201);
-  expect(response.status()).toBe(201); 
  // Intentamos registrar el mismo usuario via UI
   await registerPage.navigateToRegister();
   await registerPage.completeFormAndSubmit(
@@ -108,24 +106,13 @@ test('TC-9 Verificar registro de usuario exitoso con datos validos a través de 
     dynamicEmail,
     uniqueEmailUser.password
   );
-
+// Capturar la respuesta de la API al hacer clic en el botón de registro
   const responsePromise = page.waitForResponse ('**/api/auth/signup');
   await registerPage.clickRegisterButton();
   const response = await responsePromise;
   const responseBody = await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
   console.log('Body response:', responseBody);
   await registerPage.verifySuccessMessage();
-});
-
-test('TC-10 Realizar registro de usario desde la API y verificar login con esos datos', async ({ page,request }) => {
-  const dynamicEmail = `${uniqueEmailUser.email}${Date.now()}${uniqueEmailUser.emailSuffix}`;
-  const response = await BackendUtils.registerUserViaApi(request, uniqueEmailUser, dynamicEmail);
-  await BackendUtils.validateSignupResponse(response, uniqueEmailUser, dynamicEmail);
-  // Ahora intentamos iniciar sesión con las credenciales del usuario registrado
-  const loginPage = new LoginPage(page);
-  await loginPage.navigateToLogin();
-  await loginPage.completeFormAndSubmit(dynamicEmail, uniqueEmailUser.password);
-  await loginPage.verifySuccessMessage();
 });
 
 // Mokear la respuesta de la API para probar el manejo de errores usando route 
@@ -142,4 +129,3 @@ test('TC-11 Verificar manejo de error al registrar usuario cuando la API respond
   await expect(page.getByText('Internal Server Error')).toBeVisible();
   await expect(registerPage.registerSuccessMessage).not.toBeVisible();
 });
-// request para hacer llamadas a la API sin interfaz grafica

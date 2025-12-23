@@ -4,12 +4,14 @@ export class DashboardPage {
   readonly page: Page;
   readonly dashboardTitle: Locator;
   readonly logoutButton: Locator;
+  readonly botonAgregarCuenta: Locator;
   
   
   constructor(page: Page) {
     this.page = page;
     this.dashboardTitle = page.getByTestId('titulo-dashboard');
     this.logoutButton = page.getByTestId('boton-logout');
+    this.botonAgregarCuenta = page.getByTestId('tarjeta-agregar-cuenta');
   }
 
 async navigateToDashboard() {
