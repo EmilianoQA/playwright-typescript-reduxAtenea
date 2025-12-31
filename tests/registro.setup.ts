@@ -67,4 +67,3 @@ setup ('Realizar loguin con usuario receptor', async ({page})=>{
     await dashboardPage.verifyDashboardElements();
     await page.context().storageState({ path: usuarioRecibeAuthFile });
 });
-
