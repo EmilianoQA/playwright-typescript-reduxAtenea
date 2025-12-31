@@ -1,3 +1,4 @@
+// archivo: tests/login.spec.ts
 import { test, expect, Response } from '@playwright/test';
 import { LoginPage } from '../pages/loginPage';
 import { DashboardPage } from '../pages/dashboardPage'; 
