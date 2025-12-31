@@ -6,6 +6,7 @@ export class ModalCrearCuenta {
   readonly montoImput: Locator;
   readonly botonCancelar: Locator;
   readonly botonCrearCuenta: Locator;
+  readonly botonEnviarDinero: Locator;
   
   
   constructor(page: Page) {
@@ -14,6 +15,7 @@ export class ModalCrearCuenta {
     this.montoImput = page.getByRole('spinbutton', { name: 'Monto inicial *' });
     this.botonCancelar = page.getByTestId('boton-cancelar-crear-cuenta');
     this.botonCrearCuenta = page.getByTestId('boton-crear-cuenta');
+    this.botonEnviarDinero = page.getByTestId('boton-enviar')
   }
 
   async seleccionarTipoCuenta(tipoCuenta: string) {
@@ -24,4 +26,8 @@ export class ModalCrearCuenta {
   async ingresarMonto(monto: string) {
     await this.montoImput.fill(monto);
 }
+  async enviarDinero() {
+    await this.botonEnviarDinero.click(); 
+
+  }
 }
