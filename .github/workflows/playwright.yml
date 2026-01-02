@@ -1,27 +1,68 @@
-name: Playwright Tests
-on:
+name : CI - Clonando app y ejecutando tests con Playwright
+
+on: 
   push:
-    branches: [ main, master ]
+    branches: [main]
   pull_request:
-    branches: [ main, master ]
+    branches: [main]
+
 jobs:
   test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
+
+    services: 
+      mongo:
+        image: mongo:latest
+        ports:
+             - 27017:27017
+
+    env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      PORT: 6007
+      VITE_API_URL: http://localhost:6007/api
+
     steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
-      with:
-        name: playwright-report
-        path: playwright-report/
-        retention-days: 30
+      - name: Checkout repo actual (con el workflow)
+        uses: actions/checkout@v3
+
+      - name: Clonar repo atehena redux bank
+        run: |
+          git clone git@github.com:Atenea-Conocimientos/redux-athena-bank.git
+        
+      - name: crear archivo .env para backend
+        run: |
+            echo "MONGO_URL=${{ secrets.MONGO_URI }}" >> backend/.env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
+            echo "PORT=${{ env.PORT }}" >> backend/.env
+            echo "VITE_API_URL=${{ env.VITE_API_URL }}" >> backend/.env 
+
+      - name: Instalar dependencias backend
+        run: |
+          cd app/backend
+          npm install
+
+      - name: Cosntruir backend
+        run: |
+          cd app/backend
+          npm run dev > backend.log 2>&1 &
+
+      # se instala la herramienta wait-on para esperar a que el backend esté listo
+      - name: Instalar wait-on
+        run: npm install -g wait-on
+
+      # esperar que el backend esté listo en el puerto 6007
+      - name: Esperar backend
+        run:  wait-on tcp:6007
+
+      # instalar dependencias frontend
+      - name: Instalar dependencias frontend
+        run: |
+          cd app/frontend
+          npm install
+          env: 
+            VITE_API_URL: ${{ env.VITE_API_URL }}
+
+      # Esperar que se levante el frontend
+      - name: Esperar frontend
+        run: wait-on http://localhost:3000
