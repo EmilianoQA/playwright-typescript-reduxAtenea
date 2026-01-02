@@ -1,4 +1,3 @@
-# Flujo de trabajo de GitHub Actions para clonar una aplicación y ejecutar pruebas con Playwright
 name : CI - Clonando app y ejecutando tests con Playwright
 
 on: 
@@ -6,6 +5,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  workflow_dispatch: 
+    
+
 
 jobs:
   test:
@@ -29,14 +31,14 @@ jobs:
 
       - name: Clonar repo atehena redux bank
         run: |
-          git clone git@github.com:Atenea-Conocimientos/redux-athena-bank.git
+          git clone git@github.com:Atenea-Conocimientos/redux-athena-bank.git app
         
       - name: crear archivo .env para backend
         run: |
-            echo "MONGO_URL=${{ secrets.MONGO_URI }}" >> backend/.env
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> backend/.env
-            echo "PORT=${{ env.PORT }}" >> backend/.env
-            echo "VITE_API_URL=${{ env.VITE_API_URL }}" >> backend/.env 
+            echo "MONGO_URL=${{ secrets.MONGO_URI }}" >> app/backend/.env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> app/backend/.env
+            echo "PORT=${{ env.PORT }}" >> app/backend/.env
+            echo "VITE_API_URL=${{ env.VITE_API_URL }}" >> app/backend/.env 
 
       - name: Instalar dependencias backend
         run: |
