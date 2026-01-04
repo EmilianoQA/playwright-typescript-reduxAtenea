@@ -63,7 +63,7 @@ jobs:
         run: |
           cd app/frontend
           npm install
-          env: 
+        env: 
             VITE_API_URL: ${{ env.VITE_API_URL }}
 
       # Esperar que se levante el frontend
