@@ -76,4 +76,16 @@ jobs:
         run: wait-on http://localhost:3000
 
       # Empezar a ejecutar los tests con playwright
-      
+      - name: Instalar y ejecutar tests con Playwright
+       run: |
+          cd tests
+          npm install
+          npx playwright install 
+          npx playwright test --reporter=html
+
+      - name: Subir reporte de Playwright como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: ./playwright-report
