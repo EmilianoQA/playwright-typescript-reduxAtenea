@@ -79,7 +79,7 @@ jobs:
         run: |
           cd tests
           npm install
-          npx playwright install -- with-deps
+          npx playwright install
           npx playwright test --reporter=html
 
       - name: Subir reporte de Playwright como artefacto
