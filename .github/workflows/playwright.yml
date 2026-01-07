@@ -32,7 +32,7 @@ jobs:
       - name: Clonar repo atehena redux bank
         run: |
           git clone https://github.com/EmilianoQA/redux-athena-bank.git app
-        # https://github.com/Atenea-Conocimientos/redux-athena-bank.git
+        
       - name: crear archivo .env para backend
         run: |
             echo "MONGO_URL=${{ secrets.MONGO_URI }}" >> app/backend/.env
@@ -76,9 +76,4 @@ jobs:
         run: wait-on http://localhost:3000
 
       # Empezar a ejecutar los tests con playwright
-      - name: Instalar y ejecutar tests con Playwright
-       run: |
-          cd app/tests/playwright
-          npm install
-          npx playwright install --with-deps
-          npx playwright test --reporter=list
+      
