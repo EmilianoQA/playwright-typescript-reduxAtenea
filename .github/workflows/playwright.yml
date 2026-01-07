@@ -7,6 +7,7 @@ on:
     branches: [main]
   workflow_dispatch: 
     
+
 jobs:
   test:
     runs-on: ubuntu-latest  
@@ -75,7 +76,7 @@ jobs:
 
       # Empezar a ejecutar los tests con playwright
       - name: Instalar y ejecutar tests con Playwright
-       run: |
+        run: |
           cd tests
           npm install
           npx playwright install 
