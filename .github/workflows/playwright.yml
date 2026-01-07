@@ -80,7 +80,9 @@ jobs:
           cd tests
           npm install
           npx playwright install
-          npx playwright test --reporter=html
+          npx playwright test registro.setup.ts
+          npx playwright test
+
 
       - name: Subir reporte de Playwright como artefacto
         if: always()
