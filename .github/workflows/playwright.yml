@@ -79,8 +79,7 @@ jobs:
         run: |
           cd tests
           npm install
-          npx playwright install
-          npx playwright test registro.setup.ts
+          npx playwright install --with-deps
           npx playwright test
 
 
