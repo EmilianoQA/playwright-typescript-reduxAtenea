@@ -11,10 +11,12 @@ let modalEnviarTransferencia: ModalEnviarTransferencia;
 // extender el test para usar el estado de autenticacion de los usuarios creados en registro.setup.ts
 // usamos resolve para obtener la ruta absoluta del archivo de estado de autenticacion
 const testUsuarioEnvia = test.extend({
-    storageState: require.resolve ('../playwright/.auth/usuarioEnvia.json')
+    //storageState: require.resolve ('../playwright/.auth/usuarioEnvia.json')
+    storageState: '../playwright/auth/usuarioEnvia.json'
 });
 const testUsuarioRecibe = test.extend({
-    storageState: require.resolve ('../playwright/.auth/usuarioRecibe.json')
+    //storageState: require.resolve ('../playwright/.auth/usuarioRecibe.json')
+    storageState: '../playwright/auth/usuarioRecibe.json'
 });
 
 test.beforeEach (async ({page})=>{
