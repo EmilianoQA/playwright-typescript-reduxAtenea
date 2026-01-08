@@ -1,5 +1,5 @@
 import { test, expect, request } from '@playwright/test';
-import { RegisterPage } from '../Pages/registerPage';
+import { RegisterPage } from '../pages/registerPage';
 import testData from '../data/testData.json';
 import { LoginPage } from '../pages/loginPage';
 import { BackendUtils } from '../utils/backendUtils';

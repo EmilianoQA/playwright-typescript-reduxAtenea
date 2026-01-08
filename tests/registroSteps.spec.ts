@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { RegisterPage } from '../Pages/registerPage';
+import { RegisterPage } from '../pages/registerPage';
 import testData from '../data/testData.json';
 
 const validUser = testData.users[0];
