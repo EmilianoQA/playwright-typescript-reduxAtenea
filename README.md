@@ -1,98 +1,56 @@
-# Automatización de Pruebas E2E con Playwright y TypeScript
+# 🏦 Fintech Automation Framework (Playwright + TypeScript)
 
-Un proyecto moderno de automatización de pruebas end-to-end usando Playwright y TypeScript.
+Framework de automatización de pruebas E2E robusto y escalable, modelo diseñado para validar flujos transaccionales en una aplicación bancaria/fintech.
 
-## 📋 Descripción
+Este proyecto demuestra una arquitectura profesional orientada a la mantenibilidad, velocidad de ejecución e integración continua.
 
-Este proyecto contiene pruebas automatizadas para validar el comportamiento de aplicaciones web. Utiliza Playwright como framework de pruebas y TypeScript para mejorar la confiabilidad y mantenibilidad del código.
+## 🚀 Tech Stack & Arquitectura
 
-## 🛠️ Tecnologías
+*   **Core:** Playwright + TypeScript.
+*   **Patrón de Diseño:** Page Object Model (POM) para encapsulamiento de lógica de UI.
+*   **Optimización:** Uso de `Storage State` (.auth) para reutilización de sesiones de usuario y reducción de tiempos de ejecución.
+*   **Datos:** Gestión de datos de prueba separados (`/data`) y generación dinámica (`dataFactory.ts`).
+*   **Híbrido:** Integración de utilidades de Backend (`backendUtils.ts`) para pre-condiciones y limpieza de datos vía API.
+*   **CI/CD:** Pipeline configurado con GitHub Actions (`.github/workflows`).
 
-- **Playwright** v1.57.0 - Framework de automatización
-- **TypeScript** - Lenguaje de programación tipado
-- **Node.js** - Entorno de ejecución
+## 🧪 Escenarios Críticos Cubiertos
 
-## 📦 Requisitos Previos
+El framework valida los flujos de negocio más sensibles:
+1.  **Onboarding:** Registro de usuarios y creación de cuentas (`modalCrearCuenta.ts`).
+2.  **Transaccional:** Flujo completo de envío de transferencias entre usuarios (`transacciones.spec.ts`).
+3.  **Seguridad/Auth:** Login y gestión de sesiones persistentes.
 
-- Node.js 16+ instalado en tu máquina
-- npm o yarn como gestor de paquetes
+## 📂 Estructura del Proyecto
 
-## 🚀 Instalación
+*   `/.github`: Configuración del pipeline de CI/CD.
+*   `/pages`: Mapeo de elementos y métodos de negocio (POM).
+*   `/tests`: Specs de prueba organizados por funcionalidad.
+*   `/utils`: Helpers para llamadas a API y generación de data.
+*   `/playwright/.auth`: Archivos de estado de sesión (cookies/storage) para tests autenticados.
 
-### 1. Clonar o crear el proyecto
+## ⚙️ Ejecución Local
 
-```bash
-mkdir playwright-typescript
-cd playwright-typescript
-```
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone https://github.com/EmilianoQA/playwright-typescript-reduxAtenea.git
+    cd playwright-typescript-fintech
+    ```
+    *(Asegúrate de cambiar la URL por la real de tu repo)*
 
-### 2. Inicializar Playwright
+2.  **Instalar dependencias:**
+    ```bash
+    npm install
+    ```
 
-```bash
-npm init playwright@latest
-```
+3.  **Ejecutar todas las pruebas:**
+    ```bash
+    npx playwright test
+    ```
 
-### 3. Instalar dependencias
-
-```bash
-npm install
-```
-
-## 📝 Estructura del Proyecto
-
-```
-.
-├── tests/
-│   └── example.spec.ts          # Archivos de prueba
-├── playwright.config.ts          # Configuración de Playwright
-├── package.json                  # Dependencias del proyecto
-└── README.md                     # Este archivo
-```
-
-## ▶️ Ejecutar Pruebas
-
-```bash
-# Ejecutar todas las pruebas
-npm test
-
-# Ejecutar pruebas en modo headless
-npx playwright test
-
-# Ejecutar pruebas con UI interactivo
-npx playwright test --ui
-
-# Ejecutar pruebas en navegador específico
-npx playwright test --project=chromium
-```
-
-## 📊 Ver Reportes
-
-```bash
-# Abrir reporte HTML de últimas pruebas
-npx playwright show-report
-```
-
-## 🔧 Configuración
-
-Edita `playwright.config.ts` para personalizar:
-
-- **testDir**: Ubicación de archivos de prueba
-- **retries**: Reintentos en caso de fallo
-- **workers**: Número de pruebas en paralelo
-- **reporter**: Formato de reportes
-- **baseURL**: URL base de la aplicación
-
-## 📚 Recursos
-
-- [Documentación oficial de Playwright](https://playwright.dev)
-- [API Reference](https://playwright.dev/docs/api/class-page)
-- [Best Practices](https://playwright.dev/docs/best-practices)
-
-## 📄 Licencia
-
-ISC
+4.  **Ver reporte HTML:**
+    ```bash
+    npx playwright show-report
+    ```
 
 ---
-
-**Autor**: Emiliano  
-**Última actualización**: Diciembre 2025
+*Desarrollado por Emiliano Maure - QA Automation Engineer*
